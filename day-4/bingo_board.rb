@@ -19,9 +19,14 @@ class BingoBoard
     # if any row is all called, that's a win
     return true if @board_number_calls.map {|row| row.all? }.any?
     # else if any column is all called, that's a win
-    (0..size).map do |column| 
-      (0..size).reduce(true) do |winner, row|
-        winner && @board_number_calls[row][column]
+    (0...size).map do |column| 
+      (0...size).reduce(true) do |winner, row|
+        begin
+          winner && @board_number_calls[row][column]
+        rescue
+          binding.pry
+          raise
+        end
       end
     end.any?
   end
