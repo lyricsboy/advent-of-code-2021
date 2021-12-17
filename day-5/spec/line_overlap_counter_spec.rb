@@ -17,14 +17,6 @@ END
 describe LineOverlapCounter do
   describe "adding lines" do
 
-    it "does not add lines that are not vertical or horizontal" do
-      counter = described_class.new(5,5)
-      expect(counter.overlapping_point_count).to eq(0)
-      counter.add_line(Line.parse("0,0 -> 0,4"))
-      counter.add_line(Line.parse("0,0 -> 4,4"))
-      expect(counter.overlapping_point_count).to eq(0)
-    end
-
     it "counts a single overlapping point" do
       counter = described_class.new(5,5)
       expect(counter.overlapping_point_count).to eq(0)
@@ -49,8 +41,7 @@ describe LineOverlapCounter do
       example_lines.each do |line|
         counter.add_line(line)
       end
-      binding.pry
-      expect(counter.overlapping_point_count).to eq(5)
+      expect(counter.overlapping_point_count).to eq(12)
     end
 
   end

@@ -7,14 +7,8 @@ class LineOverlapCounter
   end
 
   def add_line(line)
-    if line.vertical?
-      line.y_range.each do |y|
-        @matrix[line.origin_point.x, y] = @matrix[line.origin_point.x, y] + 1
-      end
-    elsif line.horizontal?
-      line.x_range.each do |x|
-        @matrix[x, line.origin_point.y] = @matrix[x, line.origin_point.y] + 1
-      end
+    line.points.each do |point|
+      @matrix[point.x, point.y] = @matrix[point.x, point.y] + 1
     end
   end
 

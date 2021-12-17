@@ -11,6 +11,9 @@ class Line
   def initialize(origin_point, destination_point)
     @origin_point = origin_point
     @destination_point = destination_point
+    unless vertical? || horizontal? || forty_five_degrees?
+      raise ArgumentError, "Invalid points: #{origin_point} -> #{destination_point}"
+    end
   end
 
   def vertical?
@@ -19,6 +22,10 @@ class Line
 
   def horizontal?
     @origin_point.y == @destination_point.y
+  end
+
+  def forty_five_degrees?
+    (@destination_point.y - @origin_point.y).abs == (@destination_point.x - @origin_point.x).abs
   end
 
   def x_range
@@ -34,6 +41,15 @@ class Line
       (@origin_point.y)..(@destination_point.y)
     else
       (@destination_point.y)..(@origin_point.y)
+    end
+  end
+
+  def points
+    x_increment = @destination_point.x <=> @origin_point.x
+    y_increment = @destination_point.y <=> @origin_point.y
+    num_points = [x_range.size, y_range.size].max
+    0.upto(num_points - 1).map do |i|
+      Point.new(@origin_point.x + i * x_increment, @origin_point.y + i * y_increment)
     end
   end
 
