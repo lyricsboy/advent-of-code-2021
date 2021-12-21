@@ -1,25 +1,26 @@
 class LanternfishBreeder
-  attr_reader :fish_ages
-
   BREEDING_CYCLE_LENGTH = 7
 
   def initialize(fish_ages)
-    @fish_ages = fish_ages
+    @fish_age_groups = Array.new(BREEDING_CYCLE_LENGTH + 2, 0)
+    counted_fish_ages = fish_ages.reduce(Hash.new) do |counts, age| 
+      counts[age] = 1 + (counts[age] || 0)
+      counts
+    end
+    counted_fish_ages.each do |age, count|
+      @fish_age_groups[age] = count
+    end
+  end
+
+  def fish_count
+    @fish_age_groups.sum
   end
 
   def breed
-    new_fish_count = 0
-    fish_ages.count.times do |i|
-      fish_age = fish_ages[i]
-      if fish_age > 0
-        fish_ages[i] = fish_age - 1
-      elsif fish_age == 0
-        fish_ages[i] = BREEDING_CYCLE_LENGTH - 1
-        new_fish_count += 1
-      else
-        raise "Invalid fish age: #{fish_age}"
-      end
-    end
-    @fish_ages.concat([BREEDING_CYCLE_LENGTH + 1] * new_fish_count)
+    new_fish_count = @fish_age_groups.shift
+    # everyone that created a new fish resets to N - 1, add that to the population
+    @fish_age_groups[BREEDING_CYCLE_LENGTH - 1] = @fish_age_groups[BREEDING_CYCLE_LENGTH - 1] + new_fish_count
+    @fish_age_groups[BREEDING_CYCLE_LENGTH + 1] = new_fish_count
+    @fish_age_groups
   end
 end
