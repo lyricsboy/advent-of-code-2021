@@ -5,14 +5,17 @@ class FuelCalculator
   end
 
   def minimum_fuel_requirements
-    sorted_positions = @horizontal_positions.sort
-    median = if sorted_positions.size.even?
-      middle = sorted_positions.size / 2
-      (sorted_positions[middle - 1] + sorted_positions[middle]) / 2
-    else
-      middle = (sorted_positions.size + 1) / 2
-      sorted_positions[middle - 1]
+    mean = @horizontal_positions.sum / Float(@horizontal_positions.size)
+    mean_floor = mean.floor
+    mean_ceil = mean.ceil
+    [calculate_fuel_from(mean_floor), calculate_fuel_from(mean_ceil)].min
+  end
+
+  private
+
+  def calculate_fuel_from(mean)
+    @horizontal_positions.reduce(0) do |distance_from_mean, position|
+      distance_from_mean + (position - mean).abs.downto(1).sum
     end
-    sorted_positions.reduce(0) { |distance_from_median, position| distance_from_median + (position - median).abs }
   end
 end
