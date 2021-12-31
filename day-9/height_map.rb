@@ -8,8 +8,8 @@ class HeightMap
         @size = [@matrix.column_count, @matrix.row_count]
     end
 
-    def low_point_values
-        low_point_values = []
+    def low_points
+        low_points = []
         @matrix.row_count.times do |row_index|
             @matrix.column_count.times do |column_index|
                 value = @matrix[row_index, column_index]
@@ -25,9 +25,40 @@ class HeightMap
                     end
                     is_minimum && value < @matrix[neighbor[0], neighbor[1]]
                 end
-                low_point_values << value if is_local_minimum
+                low_points << [row_index, column_index] if is_local_minimum
             end
         end
-        low_point_values
+        low_points
+    end
+
+    def low_point_values
+        low_points.map { |point| @matrix[point[0], point[1]] }
+    end
+
+    def basin_sizes
+        low_points.map do |low_point|
+            basin_points(low_point).size
+        end
+    end
+
+    def basin_points(point)
+        ([point] + basin_neighbor_points(point).map { |neighbor| basin_points(neighbor) }.flatten(1)).uniq
+    end
+
+    def basin_neighbor_points(point)
+        point_value = @matrix[point[0], point[1]]
+        neighbors = [
+            [point[0] -1, point[1]],
+            [point[0], point[1] - 1],
+            [point[0], point[1] + 1],
+            [point[0] + 1, point[1]]
+        ]
+        neighbors.filter do |neighbor|
+            if neighbor[0] < 0 || neighbor[0] >= @matrix.row_count || neighbor[1] < 0 || neighbor[1] >= @matrix.column_count
+                next false
+            end
+            neighbor_value = @matrix[neighbor[0], neighbor[1]]
+            neighbor_value > point_value && neighbor_value < 9
+        end
     end
 end
